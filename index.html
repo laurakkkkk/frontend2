@@ -1,13 +1,538 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <title>Plataforma de Reseñas</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plataforma de Reseñas Inteligente</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 25px 40px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+      color: #667eea;
+      font-size: 2em;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    nav {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 25px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    section {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 40px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    h2 {
+      color: #667eea;
+      margin-bottom: 25px;
+      font-size: 1.8em;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    input, textarea {
+      padding: 15px 20px;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      font-size: 1em;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+
+    #search-product {
+      margin-bottom: 15px;
+    }
+
+    #search-button {
+      width: fit-content;
+      margin: 0 auto 30px;
+    }
+
+    #reviews-list {
+      display: grid;
+      gap: 20px;
+    }
+
+    .review-card {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      padding: 25px;
+      border-radius: 15px;
+      border-left: 5px solid #667eea;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .review-card:hover {
+      transform: translateX(5px);
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .review-card h3 {
+      color: #667eea;
+      margin-bottom: 10px;
+      font-size: 1.3em;
+    }
+
+    .review-card p {
+      color: #555;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+
+    .sentiment {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.9em;
+      margin-top: 10px;
+    }
+
+    .sentiment.positivo {
+      background: #4ade80;
+      color: white;
+    }
+
+    .sentiment.negativo {
+      background: #f87171;
+      color: white;
+    }
+
+    .sentiment.neutro {
+      background: #fbbf24;
+      color: white;
+    }
+
+    .alert {
+      padding: 15px 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      font-weight: 500;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateY(-10px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .alert.success {
+      background: #d1fae5;
+      color: #065f46;
+      border-left: 4px solid #10b981;
+    }
+
+    .alert.error {
+      background: #fee2e2;
+      color: #991b1b;
+      border-left: 4px solid #ef4444;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #667eea;
+      font-size: 1.2em;
+    }
+
+    .loading::after {
+      content: '...';
+      animation: dots 1.5s steps(4, end) infinite;
+    }
+
+    @keyframes dots {
+      0%, 20% { content: '.'; }
+      40% { content: '..'; }
+      60%, 100% { content: '...'; }
+    }
+
+    @media (max-width: 768px) {
+      header {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 1.5em;
+      }
+
+      section {
+        padding: 25px;
+      }
+
+      nav {
+        flex-direction: column;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h1>Reseñas de Productos</h1>
-  <a href="register.html">Registrarse</a> | <a href="login.html">Iniciar sesión</a>
-  <div id="reviews"></div>
-  <script src="app.js"></script>
+  <header>
+    <h1>🌟 Plataforma de Reseñas Inteligente</h1>
+    <nav>
+      <button id="show-login">Iniciar sesión</button>
+      <button id="show-register">Registrarse</button>
+      <button id="show-reviews">Ver Reseñas</button>
+      <button id="logout" style="display:none;">Cerrar sesión</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="register-section" class="hidden">
+      <h2>📝 Registro</h2>
+      <div id="register-alert"></div>
+      <form id="register-form">
+        <input type="email" id="register-email" placeholder="Correo electrónico" required>
+        <input type="password" id="register-password" placeholder="Contraseña (mínimo 6 caracteres)" required minlength="6">
+        <button type="submit">Crear cuenta</button>
+      </form>
+    </section>
+
+    <section id="login-section" class="hidden">
+      <h2>🔐 Iniciar sesión</h2>
+      <div id="login-alert"></div>
+      <form id="login-form">
+        <input type="email" id="login-email" placeholder="Correo electrónico" required>
+        <input type="password" id="login-password" placeholder="Contraseña" required>
+        <button type="submit">Entrar</button>
+      </form>
+    </section>
+
+    <section id="review-section" class="hidden">
+      <h2>✍️ Publicar Reseña</h2>
+      <div id="review-alert"></div>
+      <form id="review-form">
+        <input type="text" id="product-name" placeholder="Nombre del producto" required>
+        <textarea id="review-text" placeholder="Escribe tu reseña detallada del producto..." required></textarea>
+        <button type="submit">Enviar Reseña</button>
+      </form>
+    </section>
+
+    <section id="reviews-section" class="hidden">
+      <h2>📚 Reseñas de Productos</h2>
+      <input type="text" id="search-product" placeholder="Buscar producto...">
+      <button id="search-button">🔍 Buscar</button>
+      <div id="reviews-list"></div>
+    </section>
+  </main>
+
+  <script>
+    // Configuración de la API
+    const API_URL = 'http://localhost:8000'; // Cambiar en producción
+
+    // Referencias a elementos
+    const sections = {
+      register: document.getElementById('register-section'),
+      login: document.getElementById('login-section'),
+      review: document.getElementById('review-section'),
+      reviews: document.getElementById('reviews-section')
+    };
+
+    const buttons = {
+      showLogin: document.getElementById('show-login'),
+      showRegister: document.getElementById('show-register'),
+      showReviews: document.getElementById('show-reviews'),
+      logout: document.getElementById('logout'),
+      search: document.getElementById('search-button')
+    };
+
+    const forms = {
+      register: document.getElementById('register-form'),
+      login: document.getElementById('login-form'),
+      review: document.getElementById('review-form')
+    };
+
+    // Utilidades
+    function hideAllSections() {
+      Object.values(sections).forEach(section => section.classList.add('hidden'));
+    }
+
+    function showSection(section) {
+      hideAllSections();
+      section.classList.remove('hidden');
+    }
+
+    function showAlert(containerId, message, type) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = `<div class="alert ${type}">${message}</div>`;
+      setTimeout(() => container.innerHTML = '', 5000);
+    }
+
+    function updateAuthButtons() {
+      const token = localStorage.getItem('token');
+      if (token) {
+        buttons.showLogin.style.display = 'none';
+        buttons.showRegister.style.display = 'none';
+        buttons.logout.style.display = 'block';
+        showSection(sections.review);
+      } else {
+        buttons.showLogin.style.display = 'block';
+        buttons.showRegister.style.display = 'block';
+        buttons.logout.style.display = 'none';
+      }
+    }
+
+    // Navegación
+    buttons.showLogin.addEventListener('click', () => showSection(sections.login));
+    buttons.showRegister.addEventListener('click', () => showSection(sections.register));
+    buttons.showReviews.addEventListener('click', () => {
+      showSection(sections.reviews);
+      loadAllReviews();
+    });
+    buttons.logout.addEventListener('click', () => {
+      localStorage.removeItem('token');
+      updateAuthButtons();
+      showSection(sections.login);
+    });
+
+    // Registro
+    forms.register.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('register-email').value;
+      const password = document.getElementById('register-password').value;
+
+      try {
+        const response = await fetch(`${API_URL}/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+          showAlert('register-alert', '¡Registro exitoso! Ahora puedes iniciar sesión.', 'success');
+          setTimeout(() => showSection(sections.login), 2000);
+        } else {
+          showAlert('register-alert', data.detail || 'Error al registrarse', 'error');
+        }
+      } catch (error) {
+        showAlert('register-alert', 'Error de conexión con el servidor', 'error');
+      }
+    });
+
+    // Login
+    forms.login.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+
+      try {
+        const formData = new URLSearchParams();
+        formData.append('username', email);
+        formData.append('password', password);
+
+        const response = await fetch(`${API_URL}/token`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: formData
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+          localStorage.setItem('token', data.access_token);
+          showAlert('login-alert', '¡Inicio de sesión exitoso!', 'success');
+          updateAuthButtons();
+          setTimeout(() => showSection(sections.review), 1000);
+        } else {
+          showAlert('login-alert', data.detail || 'Credenciales incorrectas', 'error');
+        }
+      } catch (error) {
+        showAlert('login-alert', 'Error de conexión con el servidor', 'error');
+      }
+    });
+
+    // Publicar reseña
+    forms.review.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const producto = document.getElementById('product-name').value;
+      const texto_reseña = document.getElementById('review-text').value;
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        showAlert('review-alert', 'Debes iniciar sesión primero', 'error');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/reviews`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ producto, texto_reseña })
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+          showAlert('review-alert', '¡Reseña publicada exitosamente!', 'success');
+          forms.review.reset();
+        } else {
+          showAlert('review-alert', data.detail || 'Error al publicar reseña', 'error');
+        }
+      } catch (error) {
+        showAlert('review-alert', 'Error de conexión con el servidor', 'error');
+      }
+    });
+
+    // Cargar reseñas
+    async function loadAllReviews() {
+      const reviewsList = document.getElementById('reviews-list');
+      reviewsList.innerHTML = '<div class="loading">Cargando reseñas</div>';
+
+      try {
+        const response = await fetch(`${API_URL}/reviews/todos`);
+        const reviews = await response.json();
+
+        if (reviews.length === 0) {
+          reviewsList.innerHTML = '<p style="text-align: center; color: #999;">No hay reseñas aún</p>';
+          return;
+        }
+
+        reviewsList.innerHTML = reviews.map(review => `
+          <div class="review-card">
+            <h3>${review.producto}</h3>
+            <p>${review.texto_reseña}</p>
+            <span class="sentiment ${review.sentimiento}">${review.sentimiento.toUpperCase()}</span>
+          </div>
+        `).join('');
+      } catch (error) {
+        reviewsList.innerHTML = '<p style="text-align: center; color: #f87171;">Error al cargar reseñas</p>';
+      }
+    }
+
+    // Buscar reseñas por producto
+    buttons.search.addEventListener('click', async () => {
+      const producto = document.getElementById('search-product').value.trim();
+      if (!producto) {
+        loadAllReviews();
+        return;
+      }
+
+      const reviewsList = document.getElementById('reviews-list');
+      reviewsList.innerHTML = '<div class="loading">Buscando reseñas</div>';
+
+      try {
+        const response = await fetch(`${API_URL}/reviews/${encodeURIComponent(producto)}`);
+        const reviews = await response.json();
+
+        if (reviews.length === 0) {
+          reviewsList.innerHTML = `<p style="text-align: center; color: #999;">No se encontraron reseñas para "${producto}"</p>`;
+          return;
+        }
+
+        reviewsList.innerHTML = reviews.map(review => `
+          <div class="review-card">
+            <h3>${review.producto}</h3>
+            <p>${review.texto_reseña}</p>
+            <span class="sentiment ${review.sentimiento}">${review.sentimiento.toUpperCase()}</span>
+          </div>
+        `).join('');
+      } catch (error) {
+        reviewsList.innerHTML = '<p style="text-align: center; color: #f87171;">Error al buscar reseñas</p>';
+      }
+    });
+
+    // Inicialización
+    updateAuthButtons();
+  </script>
 </body>
 </html>
